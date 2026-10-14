@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
+import { ApiService } from '../services/api';
 import { ShieldCheck, CheckCircle2, AlertCircle, Phone, ArrowRight, ShoppingBag, Truck, Lock } from 'lucide-react';
 
 const BD_DIVISIONS = [
@@ -141,7 +142,6 @@ export const CheckoutPage: React.FC = () => {
         couponCode: appliedCoupon?.code,
       };
 
-      const { ApiService } = await import('../services/api');
       const data = await ApiService.createOrder(payload);
 
       if (data.success && data.orderNumber) {

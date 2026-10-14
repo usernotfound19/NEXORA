@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Product } from '../types';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from '../components/ProductCard';
+import { ApiService } from '../services/api';
 import { ArrowRight, ShieldCheck, Zap, Watch, Headphones, BatteryCharging, Gamepad2, ChevronRight, Award, Truck, Clock } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
@@ -10,13 +11,11 @@ export const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    import('../services/api').then(({ ApiService }) => {
-      ApiService.getProducts()
-        .then(prods => {
-          if (prods && prods.length) setProducts(prods);
-        })
-        .finally(() => setLoading(false));
-    });
+    ApiService.getProducts()
+      .then(prods => {
+        if (prods && prods.length) setProducts(prods);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const featuredProducts = products.filter(p => p.is_featured);

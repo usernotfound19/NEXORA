@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
+import { ApiService } from '../services/api';
 import { Search, Package, CheckCircle2, Clock, Truck, ShieldAlert, ArrowRight, ExternalLink } from 'lucide-react';
 
 export const OrderTrackingPage: React.FC = () => {
@@ -21,7 +22,6 @@ export const OrderTrackingPage: React.FC = () => {
     setError('');
 
     try {
-      const { ApiService } = await import('../services/api');
       const order = await ApiService.trackOrder(orderNumber.trim(), phone.trim());
       if (order) {
         setOrderData(order);

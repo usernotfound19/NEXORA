@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from '../components/ProductCard';
+import { ApiService } from '../services/api';
 import { Filter, SlidersHorizontal, Search, RefreshCw, X } from 'lucide-react';
 
 export const ProductsPage: React.FC = () => {
@@ -49,19 +50,17 @@ export const ProductsPage: React.FC = () => {
     if (searchTerm) filterObj.search = searchTerm;
     if (inStockOnly) filterObj.inStock = 'true';
 
-    import('../services/api').then(({ ApiService }) => {
-      ApiService.getProducts(filterObj)
-        .then(prods => {
-          let list = prods || [];
-          if (minPrice > 0) list = list.filter(p => p.selling_price >= minPrice);
-          if (maxPrice < 10000) list = list.filter(p => p.selling_price <= maxPrice);
-          if (sortBy === 'price_low_high') list = [...list].sort((a, b) => a.selling_price - b.selling_price);
-          else if (sortBy === 'price_high_low') list = [...list].sort((a, b) => b.selling_price - a.selling_price);
-          else if (sortBy === 'bestselling') list = [...list].sort((a, b) => b.sales_count - a.sales_count);
-          setProducts(list);
-        })
-        .finally(() => setLoading(false));
-    });
+    ApiService.getProducts(filterObj)
+      .then(prods => {
+        let list = prods || [];
+        if (minPrice > 0) list = list.filter(p => p.selling_price >= minPrice);
+        if (maxPrice < 10000) list = list.filter(p => p.selling_price <= maxPrice);
+        if (sortBy === 'price_low_high') list = [...list].sort((a, b) => a.selling_price - b.selling_price);
+        else if (sortBy === 'price_high_low') list = [...list].sort((a, b) => b.selling_price - a.selling_price);
+        else if (sortBy === 'bestselling') list = [...list].sort((a, b) => b.sales_count - a.sales_count);
+        setProducts(list);
+      })
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {

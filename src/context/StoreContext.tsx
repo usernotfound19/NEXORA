@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Product, Category, CartItem, StoreSettings, User, Coupon } from '../types';
+import { ApiService, initLocalData } from '../services/api';
 
 interface ToastNotification {
   id: string;
@@ -198,14 +199,12 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   // Fetch store settings & categories on load using resilient ApiService
   useEffect(() => {
-    import('../services/api').then(({ ApiService, initLocalData }) => {
-      initLocalData();
-      ApiService.getSettings().then(s => {
-        if (s) setSettings(prev => ({ ...prev, ...s }));
-      });
-      ApiService.getCategories().then(c => {
-        if (c && c.length) setCategories(c);
-      });
+    initLocalData();
+    ApiService.getSettings().then(s => {
+      if (s) setSettings(prev => ({ ...prev, ...s }));
+    });
+    ApiService.getCategories().then(c => {
+      if (c && c.length) setCategories(c);
     });
   }, []);
 

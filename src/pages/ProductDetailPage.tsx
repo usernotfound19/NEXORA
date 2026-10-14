@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Product, Review } from '../types';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from '../components/ProductCard';
+import { ApiService } from '../services/api';
 import { Heart, ShoppingBag, Zap, ShieldCheck, Truck, RefreshCw, MessageCircle, Star, Check, Plus, Minus, ArrowLeft } from 'lucide-react';
 
 export const ProductDetailPage: React.FC = () => {
@@ -27,29 +28,27 @@ export const ProductDetailPage: React.FC = () => {
     if (!identifier) return;
     setLoading(true);
 
-    import('../services/api').then(({ ApiService }) => {
-      ApiService.getProduct(identifier).then(p => {
-        if (p) {
-          setProduct(p);
-          setSelectedImage(p.primary_image);
-          setReviews([]);
-          ApiService.getProducts().then(all => {
-            setRelated(all.filter(x => x.id !== p.id).slice(0, 4));
+    ApiService.getProduct(identifier).then(p => {
+      if (p) {
+        setProduct(p);
+        setSelectedImage(p.primary_image);
+        setReviews([]);
+        ApiService.getProducts().then(all => {
+          setRelated(all.filter(x => x.id !== p.id).slice(0, 4));
+        });
+        if (p.variants && p.variants.length > 0) {
+          const defaults: Record<string, string> = {};
+          p.variants.forEach((v: any) => {
+            if (v.options && v.options.length > 0) {
+              defaults[v.label] = v.options[0];
+            }
           });
-          if (p.variants && p.variants.length > 0) {
-            const defaults: Record<string, string> = {};
-            p.variants.forEach((v: any) => {
-              if (v.options && v.options.length > 0) {
-                defaults[v.label] = v.options[0];
-              }
-            });
-            setSelectedVariants(defaults);
-          }
-        } else {
-          setProduct(null);
+          setSelectedVariants(defaults);
         }
-      }).finally(() => setLoading(false));
-    });
+      } else {
+        setProduct(null);
+      }
+    }).finally(() => setLoading(false));
   }, [identifier]);
 
   if (loading) {
